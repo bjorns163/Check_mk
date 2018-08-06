@@ -21,7 +21,6 @@ def check_fortigate_wtp(item, _no_params, info):
             wtp_status = fortigate_wtp_status_map[wtpstate]
             nagstatus  = fortigate_wtp_status2nagios_map[wtp_status]
             output = "WTP %s(%s) state: %s" % (wtpname, wtpfirmware, wtp_status)
-            #return (3, "UNKNOWN - not yet implemented")
             return (nagstatus, output)
 
 
