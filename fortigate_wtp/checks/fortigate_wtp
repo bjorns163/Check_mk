@@ -1,7 +1,5 @@
 #!/usr/bin/python
 # -*- encoding: utf-8; py-indent-offset: 4 -*-
-import socket
-
 # wtpstate: connection state of a WTP to AC :
 # other(0), offLine(1), onLine(2), downloadingImage(3), connectedImage(4)
 
@@ -12,18 +10,18 @@ fortigate_wtp_status2nagios_map = { 'Online': 0, 'DownloadingImage': 1, 'Connect
 def inventory_fortigate_wtp(checkname, info):
     if info and len(info) > 0 and info[0] != '':
         inventory = []
-        for wtpuid, wtpip, wtpstate, wtpname in info:
+        for wtpuid, wtpfirmware, wtpstate, wtpname in info:
             inventory.append( (wtpuid, "", None) )
-
         return inventory
 
 
 def check_fortigate_wtp(item, _no_params, info):
-    for wtpuid, wtpip, wtpstate, wtpname in info:
+    for wtpuid, wtpfirmware, wtpstate, wtpname in info:
         if wtpuid == item:
             wtp_status = fortigate_wtp_status_map[wtpstate]
             nagstatus  = fortigate_wtp_status2nagios_map[wtp_status]
-            output = "WTP %s(%s) state: %s" % (wtpname, socket.inet_ntoa(wtpip), wtp_status)
+            output = "WTP %s(%s) state: %s" % (wtpname, wtpfirmware, wtp_status)
+            #return (3, "UNKNOWN - not yet implemented")
             return (nagstatus, output)
 
 
@@ -33,5 +31,5 @@ check_info["fortigate_wtp"] = {
     "service_description"   : "WTP",
     "has_perfdata"          : False,
     "snmp_scan_function"    : lambda oid: oid(".1.3.6.1.4.1.12356.101.14.2.4.0"),
-    "snmp_info"             : ( ".1.3.6.1.4.1.12356.101.14.4", [ "4.1.1" , "4.1.3" , "4.1.7", "3.1.3" ] ),
+    "snmp_info"             : ( ".1.3.6.1.4.1.12356.101.14.4", [ "4.1.1" , "4.1.14" , "4.1.7", "3.1.3" ] ),
 }
