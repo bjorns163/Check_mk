@@ -36,7 +36,7 @@ import re
 dell_n2000_cpu_default_levels = (80, 90)
 
 # Inventory of dell power connect CPU details.
-def inventory_dell_n2000_cpu(checkname, info):
+def inventory_dell_n2000_cpu(info):
     enabled = '1'
 #    print info
     if info:
