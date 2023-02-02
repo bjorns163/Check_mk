@@ -1,0 +1,30 @@
+#!/bin/bash
+#this check looks in a folder and looks if there are files older than 15min and creats warning.
+#when files are older then 30min is critical.
+
+folder="/home/user/check_folder/"
+critlvl = 1800 #in seconds 1800 = 30min
+warnlvl = 900 #in seconds 900 = 15min
+
+files_count=$(find $folder -type f | wc -l)
+
+if [ $files_count -eq 0 ]; then
+  echo "0 Filecount_$folder count=0;1;2;0; OK - No files found in the folder."
+  exit 1
+fi
+
+oldest_file=$(find $folder -type f -printf '%T@ %p\n' | sort | head -n 1)
+oldest_file_time=$(echo $oldest_file | awk '{print $1}')
+oldest_file_time_int=$(printf "%.0f" $oldest_file_time)
+oldest_file_path=$(echo $oldest_file | awk '{print $2}')
+current_time=$(date +%s)
+
+time_diff=$((current_time - oldest_file_time_int))
+
+if [ $time_diff -gt $critlvl ]; then
+  echo "2 Filecount_$folder count=$files_count;1;2;0; CRITICAL - Oldest file found is $(date -d @$oldest_file_time), total files found: $files_count"
+elif [ $time_diff -gt $warnlvl ]; then
+  echo "1 Filecount_$folder count=$files_count;1;2;0; WARNING - Oldest file found is $(date -d @$oldest_file_time), total files found: $files_count"
+else
+  echo "0 Filecount_$folder count=$files_count;1;2;0; OK - The files are still within the acceptable time frame. Total files found: $files_count"
+fi
